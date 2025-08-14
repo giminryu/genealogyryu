@@ -1,11 +1,16 @@
 package com.genealogy.genealogryu.controller;
 
+import com.genealogy.genealogryu.entity.Event;
+import com.genealogy.genealogryu.repository.EventRepository;
+import com.genealogy.genealogryu.service.EventService;
 import com.genealogy.genealogryu.service.MemberService;
 import com.genealogy.genealogryu.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 @Controller
 public class HomeController {
@@ -15,7 +20,13 @@ public class HomeController {
     
     @Autowired
     private NoticeService noticeService;
-    
+
+    @Autowired
+    private EventRepository eventRepository;
+    @Autowired
+    private EventService eventService;
+
+
     // 메인 홈페이지
     @GetMapping("/")
     public String home(Model model) {
@@ -35,7 +46,11 @@ public class HomeController {
         
         // 전체 공지사항 수
         model.addAttribute("totalNotices", noticeService.getNoticeCount());
-        
+
+        List<Event> latest = eventRepository.findTop5ByOrderByCreatedAtDesc();
+        model.addAttribute("latestEvents", latest);
+
+
         return "home";
     }
     
@@ -70,4 +85,13 @@ public class HomeController {
     public String contact() {
         return "contact";
     }
+
+    // 달력 화면
+    @GetMapping("/calendar")
+    public String calendar(Model model) {
+        // 달력에 뿌릴 전체(또는 필요한 기간 필터) 일정
+        model.addAttribute("events", eventService.getAllEvents());
+        return "events/calendar";
+    }
+
 }

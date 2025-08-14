@@ -81,6 +81,9 @@
                         <a class="nav-link" href="/notices">공지사항</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/events">경조사</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/members">회원관리</a>
                     </li>
                     <li class="nav-item">
@@ -131,17 +134,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card stats-card text-center">
-                        <div class="card-body">
-                            <i class="bi bi-people-fill display-4 mb-3"></i>
-                            <h3 class="card-title" th:text="${totalMembers}">0</h3>
-                            <p class="card-text">전체 회원</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card stats-card text-center">
-                        <div class="card-body">
+                    <div class="card stats-card text-center" role="button"
+                         style="cursor:pointer" onclick="location.href='/notices'">
+                    <div class="card-body">
                             <i class="bi bi-megaphone-fill display-4 mb-3"></i>
                             <h3 class="card-title" th:text="${totalNotices}">0</h3>
                             <p class="card-text">공지사항</p>
@@ -154,6 +149,7 @@
                             <i class="bi bi-calendar-event-fill display-4 mb-3"></i>
                             <h3 class="card-title">12</h3>
                             <p class="card-text">연간 행사</p>
+                            <a href="/events/calendar" class="stretched-link" aria-label="연간 행사 달력으로 이동"></a>
                         </div>
                     </div>
                 </div>
@@ -164,6 +160,39 @@
                             <h3 class="card-title">50+</h3>
                             <p class="card-text">연간 역사</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-flower3 me-2"></i>경조사</h5>
+                        <p class="card-text text-muted">경사/조사 소식을 공유하고 함께 마음을 나눠요.</p>
+
+                        <!-- 최근 5개 목록 -->
+                        <ul class="list-group list-group-flush mb-3" th:if="${latestEvents}">
+                            <li class="list-group-item px-0 py-2"
+                                th:each="e : ${latestEvents}">
+                                <a th:href="@{/events/{id}(id=${e.id})}" class="text-decoration-none">
+                                    <span class="badge bg-secondary me-2" th:text="${e.type}">CELEBRATION</span>
+                                    <span th:text="${#strings.abbreviate(e.title, 28)}">제목</span>
+                                </a>
+                                <div class="text-muted small">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    <span th:text="${e.eventDate}">2025-01-01</span>
+                                    <span class="ms-2"><i class="bi bi-eye me-1"></i><span th:text="${e.viewCount}">0</span></span>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <!-- 비어 있을 때 -->
+                        <div class="text-muted small mb-3" th:if="${latestEvents == null or #lists.isEmpty(latestEvents)}">
+                            최근 등록된 경조사가 없습니다.
+                        </div>
+
+                        <a href="/events" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>경조사 게시판으로
+                        </a>
                     </div>
                 </div>
             </div>

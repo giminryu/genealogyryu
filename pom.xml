@@ -12,7 +12,7 @@
 	<artifactId>genealogryu</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>genealogryu</name>
-	<description>종친회 홈페이지</description>
+	<description>진주류씨 반구당공파 홈페이지</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -68,7 +68,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>
