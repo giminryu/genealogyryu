@@ -1,31 +1,119 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout('공지사항', ~{::section})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>공지사항 - 진주 류씨 반구당공파</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    
+    <title>공지사항</title>
+</head>
+<body>
+    <section>
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-megaphone me-2"></i>공지사항</h2>
+                <div>
+                    <a href="/notices/create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>공지사항 작성
+                    </a>
+                </div>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <form th:action="@{/notices/search}" method="get" class="d-flex">
+                        <input type="text" name="keyword" class="form-control me-2" placeholder="검색어를 입력하세요">
+                        <select name="type" class="form-select me-2" style="width: auto;">
+                            <option value="title">제목</option>
+                            <option value="author">작성자</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/notices/important" class="btn btn-outline-danger me-2">
+                        <i class="bi bi-exclamation-triangle me-1"></i>중요
+                    </a>
+                    <a href="/notices/popular" class="btn btn-outline-warning me-2">
+                        <i class="bi bi-fire me-1"></i>인기
+                    </a>
+                    <a href="/notices/recent" class="btn btn-outline-info">
+                        <i class="bi bi-clock me-1"></i>최신
+                    </a>
+                </div>
+            </div>
+
+            <!-- 공지사항 목록 -->
+            <div class="row">
+                <div class="col-12">
+                    <div th:if="${notices.empty}" class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                        <h4 class="mt-3 text-muted">등록된 공지사항이 없습니다.</h4>
+                        <p class="text-muted">첫 번째 공지사항을 작성해보세요.</p>
+                        <a href="/notices/create" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>공지사항 작성
+                        </a>
+                    </div>
+
+                    <div th:each="notice : ${notices}" class="card mb-3 notice-item" th:classappend="${notice.important ? 'important-notice' : ''}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title">
+                                        <a th:href="@{/notices/{id}(id=${notice.id})}" 
+                                           th:text="${notice.title}" 
+                                           class="text-decoration-none"></a>
+                                        <span th:if="${notice.important}" class="badge bg-danger ms-2">중요</span>
+                                    </h5>
+                                    <p class="card-text text-muted" th:text="${#strings.abbreviate(notice.content, 150)}"></p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="bi bi-person me-1"></i>
+                                            <span th:text="${notice.author}"></span>
+                                            <i class="bi bi-calendar me-1 ms-3"></i>
+                                            <span th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                                            <i class="bi bi-eye me-1 ms-3"></i>
+                                            <span th:text="${notice.viewCount}"></span>
+                                        </small>
+                                        <div>
+                                            <a th:href="@{/notices/{id}/edit(id=${notice.id})}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil me-1"></i>수정
+                                            </a>
+                                            <form th:action="@{/notices/{id}/delete(id=${notice.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger ms-1" 
+                                                        onclick="return confirm('정말 삭제하시겠습니까?')">
+                                                    <i class="bi bi-trash me-1"></i>삭제
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <nav th:if="${notices.size() > 0}" aria-label="공지사항 페이지네이션">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">이전</a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+
     <style>
-        .navbar-brand {
-            font-weight: bold;
-            color: #2c3e50 !important;
-        }
-        
         .card {
             border: none;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .footer {
-            background-color: #2c3e50;
-            color: white;
-            padding: 40px 0;
-            margin-top: 50px;
         }
         
         .btn-primary {
@@ -51,274 +139,5 @@
             transform: translateY(-2px);
         }
     </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-people-fill me-2"></i>진주 류씨 반구당공파
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/">홈</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about">소개</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/notices">공지사항</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/events">경조사</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/members">회원관리</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">대시보드</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/contact">연락처</a>
-                    </li>
-                </ul>
-                
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/members/register">
-                            <i class="bi bi-person-plus me-1"></i>회원가입
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container py-5">
-        <!-- Flash Messages -->
-        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>
-            <span th:text="${message}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2><i class="bi bi-megaphone me-2"></i>공지사항</h2>
-                <p class="text-muted mb-0">총 <span th:text="${totalNotices}">0</span>개의 공지사항이 있습니다.</p>
-            </div>
-            <div>
-                <a href="/notices/create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-2"></i>새 공지사항 작성
-                </a>
-            </div>
-        </div>
-        
-        <!-- Search Form -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form th:action="@{/notices/search}" method="get" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="keyword" class="form-label">검색어</label>
-                        <input type="text" class="form-control" id="keyword" name="keyword" 
-                               placeholder="검색어를 입력하세요">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="type" class="form-label">검색 유형</label>
-                        <select class="form-select" id="type" name="type">
-                            <option value="title">제목</option>
-                            <option value="author">작성자</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">&nbsp;</label>
-                        <div>
-                            <button type="submit" class="btn btn-outline-primary">
-                                <i class="bi bi-search me-2"></i>검색
-                            </button>
-                            <a href="/notices" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-clockwise me-2"></i>초기화
-                            </a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Quick Links -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <a href="/notices/important" class="btn btn-outline-danger w-100">
-                    <i class="bi bi-exclamation-triangle me-2"></i>중요 공지사항
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="/notices/popular" class="btn btn-outline-warning w-100">
-                    <i class="bi bi-fire me-2"></i>인기 공지사항
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="/notices" class="btn btn-outline-info w-100">
-                    <i class="bi bi-clock me-2"></i>최신 공지사항
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="/notices/create" class="btn btn-outline-success w-100">
-                    <i class="bi bi-plus-circle me-2"></i>공지사항 작성
-                </a>
-            </div>
-        </div>
-        
-        <!-- Notices List -->
-        <div class="row">
-            <div class="col-12" th:each="notice : ${notices}">
-                <div class="card mb-3 notice-item" th:classappend="${notice.important ? 'important-notice' : ''}">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="d-flex align-items-center mb-2">
-                                    <h5 class="card-title mb-0">
-                                        <a th:href="@{/notices/{id}(id=${notice.id})}" 
-                                           th:text="${notice.title}" 
-                                           class="text-decoration-none"></a>
-                                    </h5>
-                                    <span th:if="${notice.important}" class="badge bg-danger ms-2">중요</span>
-                                </div>
-                                <p class="card-text text-muted" th:text="${#strings.abbreviate(notice.content, 150)}"></p>
-                                <div class="d-flex align-items-center text-muted small">
-                                    <span>
-                                        <i class="bi bi-person me-1"></i>
-                                        <span th:text="${notice.author}"></span>
-                                    </span>
-                                    <span class="ms-3">
-                                        <i class="bi bi-calendar me-1"></i>
-                                        <span th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-                                    </span>
-                                    <span class="ms-3">
-                                        <i class="bi bi-eye me-1"></i>
-                                        <span th:text="${notice.viewCount}"></span>회 조회
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <div class="btn-group" role="group">
-                                    <a th:href="@{/notices/{id}(id=${notice.id})}" 
-                                       class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-eye me-1"></i>보기
-                                    </a>
-                                    <a th:href="@{/notices/{id}/edit(id=${notice.id})}" 
-                                       class="btn btn-outline-warning btn-sm">
-                                        <i class="bi bi-pencil me-1"></i>수정
-                                    </a>
-                                    <button type="button" 
-                                            class="btn btn-outline-danger btn-sm"
-                                            onclick="confirmDelete(this, [[${notice.id}]], [[${notice.title}]])">
-                                        <i class="bi bi-trash me-1"></i>삭제
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Empty State -->
-            <div class="col-12" th:if="${#lists.isEmpty(notices)}">
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <i class="bi bi-megaphone display-4 text-muted d-block mb-3"></i>
-                        <h5 class="text-muted">등록된 공지사항이 없습니다.</h5>
-                        <p class="text-muted">첫 번째 공지사항을 작성해보세요.</p>
-                        <a href="/notices/create" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-2"></i>공지사항 작성하기
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">공지사항 삭제 확인</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>정말로 <strong id="noticeTitle"></strong> 공지사항을 삭제하시겠습니까?</p>
-                    <p class="text-muted small">삭제된 공지사항은 복구할 수 없습니다.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <form id="deleteForm" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-danger">삭제</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>진주 류씨 반구당공파</h5>
-                    <p>우리 가문의 전통을 이어가고 후손들의 화합을 도모합니다.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>연락처</h5>
-                    <p>
-                        <i class="bi bi-telephone me-2"></i>02-1234-5678<br>
-                        <i class="bi bi-envelope me-2"></i>info@genealogy.com<br>
-                        <i class="bi bi-geo-alt me-2"></i>서울시 강남구 종친회관
-                    </p>
-                </div>
-                <div class="col-md-4">
-                    <h5>바로가기</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="/about" class="text-light">소개</a></li>
-                        <li><a href="/notices" class="text-light">공지사항</a></li>
-                        <li><a href="/members" class="text-light">회원관리</a></li>
-                        <li><a href="/contact" class="text-light">연락처</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="text-center">
-                <p>&copy; 2025 진주 류씨 반구당공파. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom Scripts -->
-    <script>
-        function confirmDelete(button, noticeId, noticeTitle) {
-            document.getElementById('noticeTitle').textContent = noticeTitle;
-            document.getElementById('deleteForm').action = '/notices/' + noticeId + '/delete';
-            
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
-        }
-    </script>
 </body>
 </html>

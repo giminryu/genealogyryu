@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>경조사 검색 결과</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-search me-2"></i>경조사 검색 결과
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <form th:action="@{/events/search}" method="get" class="row g-3">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="검색어를 입력하세요">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" name="type">
+                                        <option value="title" th:selected="${searchType == 'title'}">제목</option>
+                                        <option value="author" th:selected="${searchType == 'author'}">작성자</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-search me-1"></i>검색
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="alert alert-info" th:if="${keyword}">
+                            <strong th:text="${keyword}"></strong>에 대한 검색 결과: <span th:text="${events.size()}"></span>건
+                        </div>
+                        
+                        <div th:if="${events.empty}" class="text-center py-5">
+                            <i class="bi bi-search display-1 text-muted"></i>
+                            <h4 class="mt-3 text-muted">검색 결과가 없습니다.</h4>
+                            <p class="text-muted">다른 검색어를 시도해보세요.</p>
+                        </div>
+                        
+                        <div th:if="${!events.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>번호</th>
+                                            <th>제목</th>
+                                            <th>유형</th>
+                                            <th>일자</th>
+                                            <th>작성자</th>
+                                            <th>조회수</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="event : ${events}">
+                                            <td th:text="${event.id}"></td>
+                                            <td>
+                                                <a th:href="@{/events/{id}(id=${event.id})}" th:text="${event.title}"></a>
+                                                <span th:if="${event.important}" class="badge bg-danger ms-1">중요</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${event.type == 'CELEBRATION'}" class="badge bg-success">경사</span>
+                                                <span th:if="${event.type == 'CONDOLENCE'}" class="badge bg-secondary">조사</span>
+                                            </td>
+                                            <td th:text="${#temporals.format(event.eventDate, 'yyyy-MM-dd')}"></td>
+                                            <td th:text="${event.author}"></td>
+                                            <td th:text="${event.viewCount}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="/events" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>목록으로
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

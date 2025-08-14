@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 통계</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="bi bi-graph-up me-2"></i>회원 통계
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- 전체 통계 -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-people display-4"></i>
+                                        <h4 th:text="${totalMembers}">0</h4>
+                                        <p>전체 회원</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-person-check display-4"></i>
+                                        <h4 th:text="${recentMembers.size()}">0</h4>
+                                        <p>최근 가입</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-geo-alt display-4"></i>
+                                        <h4 th:text="${membersByRegion.size()}">0</h4>
+                                        <p>지역별 분포</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-dark">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-diagram-3 display-4"></i>
+                                        <h4 th:text="${membersByRank.size()}">0</h4>
+                                        <p>항렬별 분포</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 상세 통계 -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">항렬별 회원 수</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div th:if="${membersByRank.empty}" class="text-center py-3">
+                                            <p class="text-muted">데이터가 없습니다.</p>
+                                        </div>
+                                        <div th:if="${!membersByRank.empty}">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>항렬</th>
+                                                            <th>회원 수</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="stat : ${membersByRank}">
+                                                            <td th:text="${stat[0]}"></td>
+                                                            <td th:text="${stat[1]}"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">지역별 회원 수</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div th:if="${membersByRegion.empty}" class="text-center py-3">
+                                            <p class="text-muted">데이터가 없습니다.</p>
+                                        </div>
+                                        <div th:if="${!membersByRegion.empty}">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>지역</th>
+                                                            <th>회원 수</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="stat : ${membersByRegion}">
+                                                            <td th:text="${stat[0]}"></td>
+                                                            <td th:text="${stat[1]}"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 최근 가입 회원 -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">최근 가입한 회원</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div th:if="${recentMembers.empty}" class="text-center py-3">
+                                            <p class="text-muted">최근 가입한 회원이 없습니다.</p>
+                                        </div>
+                                        <div th:if="${!recentMembers.empty}">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>이름</th>
+                                                            <th>전화번호</th>
+                                                            <th>이메일</th>
+                                                            <th>항렬</th>
+                                                            <th>가입일</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="member : ${recentMembers}">
+                                                            <td>
+                                                                <a th:href="@{/members/{id}(id=${member.id})}" th:text="${member.name}"></a>
+                                                            </td>
+                                                            <td th:text="${member.phone}"></td>
+                                                            <td th:text="${member.email != null ? member.email : '-'}"></td>
+                                                            <td th:text="${member.familyRank != null ? member.familyRank : '-'}"></td>
+                                                            <td th:text="${#temporals.format(member.joinDate, 'yyyy-MM-dd')}"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="/members" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>목록으로
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

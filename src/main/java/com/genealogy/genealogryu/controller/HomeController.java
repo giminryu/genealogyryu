@@ -1,16 +1,19 @@
 package com.genealogy.genealogryu.controller;
 
-import com.genealogy.genealogryu.entity.Event;
-import com.genealogy.genealogryu.repository.EventRepository;
-import com.genealogy.genealogryu.service.EventService;
-import com.genealogy.genealogryu.service.MemberService;
-import com.genealogy.genealogryu.service.NoticeService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List;
+import com.genealogy.genealogryu.entity.Event;
+import com.genealogy.genealogryu.entity.Member;
+import com.genealogy.genealogryu.entity.Notice;
+import com.genealogy.genealogryu.repository.EventRepository;
+import com.genealogy.genealogryu.service.EventService;
+import com.genealogy.genealogryu.service.MemberService;
+import com.genealogy.genealogryu.service.NoticeService;
 
 @Controller
 public class HomeController {
@@ -31,25 +34,29 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         // 최신 공지사항 5개
-        model.addAttribute("recentNotices", noticeService.getRecentNotices().subList(0, 
-            Math.min(5, noticeService.getRecentNotices().size())));
+        List<Notice> recentNotices = noticeService.getRecentNotices();
+        model.addAttribute("recentNotices", recentNotices.isEmpty() ? 
+            List.of() : recentNotices.subList(0, Math.min(5, recentNotices.size())));
         
         // 중요 공지사항
         model.addAttribute("importantNotices", noticeService.getImportantNotices());
         
         // 인기 공지사항 3개
-        model.addAttribute("popularNotices", noticeService.getPopularNotices().subList(0, 
-            Math.min(3, noticeService.getPopularNotices().size())));
+        List<Notice> popularNotices = noticeService.getPopularNotices();
+        model.addAttribute("popularNotices", popularNotices.isEmpty() ? 
+            List.of() : popularNotices.subList(0, Math.min(3, popularNotices.size())));
         
         // 전체 회원 수
         model.addAttribute("totalMembers", memberService.getActiveMemberCount());
         
         // 전체 공지사항 수
         model.addAttribute("totalNotices", noticeService.getNoticeCount());
+        
+        // 전체 경조사 수
+        model.addAttribute("totalEvents", eventService.getEventCount());
 
         List<Event> latest = eventRepository.findTop5ByOrderByCreatedAtDesc();
         model.addAttribute("latestEvents", latest);
-
 
         return "home";
     }
@@ -58,8 +65,9 @@ public class HomeController {
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // 최근 가입한 회원들
-        model.addAttribute("recentMembers", memberService.getRecentMembers().subList(0, 
-            Math.min(10, memberService.getRecentMembers().size())));
+        List<Member> recentMembers = memberService.getRecentMembers();
+        model.addAttribute("recentMembers", recentMembers.isEmpty() ? 
+            List.of() : recentMembers.subList(0, Math.min(10, recentMembers.size())));
         
         // 항렬별 회원 수
         model.addAttribute("membersByRank", memberService.getMemberCountByFamilyRank());

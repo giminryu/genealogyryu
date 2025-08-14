@@ -25,5 +25,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     // 월별 이벤트 수 조회
     @Query("SELECT MONTH(e.eventDate), COUNT(e) FROM Event e GROUP BY MONTH(e.eventDate) ORDER BY MONTH(e.eventDate)")
     List<Object[]> countEventsByMonth();
+    
+
 
 }

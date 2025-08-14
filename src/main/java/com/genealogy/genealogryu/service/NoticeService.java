@@ -1,13 +1,14 @@
 package com.genealogy.genealogryu.service;
 
-import com.genealogy.genealogryu.entity.Notice;
-import com.genealogy.genealogryu.repository.NoticeRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.genealogy.genealogryu.entity.Notice;
+import com.genealogy.genealogryu.repository.NoticeRepository;
 
 @Service
 @Transactional
@@ -23,12 +24,7 @@ public class NoticeService {
     
     // 공지사항 조회 (ID로)
     public Optional<Notice> getNoticeById(Long id) {
-        Optional<Notice> notice = noticeRepository.findById(id);
-        if (notice.isPresent()) {
-            // 조회수 증가
-            noticeRepository.incrementViewCount(id);
-        }
-        return notice;
+        return noticeRepository.findById(id);
     }
     
     // 전체 공지사항 조회
@@ -90,8 +86,12 @@ public class NoticeService {
     }
     
     // 조회수 증가
+    @Transactional
     public void incrementViewCount(Long id) {
-        noticeRepository.incrementViewCount(id);
+        noticeRepository.findById(id).ifPresent(notice -> {
+            notice.setViewCount(notice.getViewCount() + 1);
+            noticeRepository.save(notice);
+        });
     }
     
     // 중요도 토글

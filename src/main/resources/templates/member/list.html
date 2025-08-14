@@ -1,31 +1,141 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout('회원관리', ~{::section})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원 목록 - 진주 류씨 반구당공파</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    
+    <title>회원관리</title>
+</head>
+<body>
+    <section>
+        <div class="container mt-4">
+            <!-- Flash Messages -->
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="bi bi-people me-2"></i>회원 목록</h2>
+                    <p class="text-muted mb-0">총 <span th:text="${totalMembers}">0</span>명의 회원이 있습니다.</p>
+                </div>
+                <div>
+                    <a href="/members/register" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i>회원 등록
+                    </a>
+                </div>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <form th:action="@{/members/search}" method="get" class="d-flex">
+                        <input type="text" name="keyword" class="form-control me-2" placeholder="이름, 전화번호, 이메일로 검색">
+                        <select name="status" class="form-select me-2" style="width: auto;">
+                            <option value="">전체</option>
+                            <option value="ACTIVE">활성</option>
+                            <option value="INACTIVE">비활성</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/members/statistics" class="btn btn-outline-info me-2">
+                        <i class="bi bi-graph-up me-1"></i>통계
+                    </a>
+                    <a href="/members/bulk" class="btn btn-outline-warning me-2">
+                        <i class="bi bi-gear me-1"></i>일괄관리
+                    </a>
+                    <a href="/members/export" class="btn btn-outline-success">
+                        <i class="bi bi-download me-1"></i>내보내기
+                    </a>
+                </div>
+            </div>
+
+            <!-- 회원 목록 -->
+            <div class="card">
+                <div class="card-body">
+                    <div th:if="${members.empty}" class="text-center py-5">
+                        <i class="bi bi-people" style="font-size: 3rem; color: #ccc;"></i>
+                        <h4 class="mt-3 text-muted">등록된 회원이 없습니다.</h4>
+                        <p class="text-muted">첫 번째 회원을 등록해보세요.</p>
+                        <a href="/members/register" class="btn btn-primary">
+                            <i class="bi bi-person-plus me-2"></i>회원 등록
+                        </a>
+                    </div>
+
+                    <div th:if="${!members.empty}" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>이름</th>
+                                    <th>전화번호</th>
+                                    <th>이메일</th>
+                                    <th>생년월일</th>
+                                    <th>상태</th>
+                                    <th>등록일</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="member, stat : ${members}">
+                                    <td th:text="${stat.count}">1</td>
+                                    <td>
+                                        <a th:href="@{/members/{id}(id=${member.id})}" 
+                                           th:text="${member.name}" 
+                                           class="text-decoration-none"></a>
+                                    </td>
+                                    <td th:text="${member.phone}">010-1234-5678</td>
+                                    <td th:text="${member.email}">example@email.com</td>
+                                    <td th:text="${#temporals.format(member.birthDate, 'yyyy-MM-dd')}">1990-01-01</td>
+                                    <td>
+                                        <span th:if="${member.status.name() == 'ACTIVE'}" class="badge bg-success">활성</span>
+                                        <span th:if="${member.status.name() == 'INACTIVE'}" class="badge bg-secondary">비활성</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">2025-01-01</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a th:href="@{/members/{id}(id=${member.id})}" class="btn btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:href="@{/members/{id}/edit(id=${member.id})}" class="btn btn-outline-warning">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form th:action="@{/members/{id}/toggle-status(id=${member.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-outline-info" 
+                                                        th:title="${member.status.name() == 'ACTIVE' ? '비활성화' : '활성화'}">
+                                                    <i th:class="${member.status.name() == 'ACTIVE' ? 'bi bi-pause' : 'bi bi-play'}"></i>
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/members/{id}/delete(id=${member.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-outline-danger" 
+                                                        onclick="return confirm('정말 삭제하시겠습니까?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <style>
-        .navbar-brand {
-            font-weight: bold;
-            color: #2c3e50 !important;
-        }
-        
         .card {
             border: none;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .footer {
-            background-color: #2c3e50;
-            color: white;
-            padding: 40px 0;
-            margin-top: 50px;
         }
         
         .btn-primary {
@@ -43,253 +153,5 @@
             border-top: none;
         }
     </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-people-fill me-2"></i>진주 류씨 반구당공파
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/">홈</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="/about">소개</a>
-                </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/notices">공지사항</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/events">경조사</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/members">회원관리</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/contact">연락처</a>
-                    </li>
-                </ul>
-                
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/members/register">
-                            <i class="bi bi-person-plus me-1"></i>회원가입
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container py-5">
-        <!-- Flash Messages -->
-        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>
-            <span th:text="${message}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2><i class="bi bi-people me-2"></i>회원 목록</h2>
-                <p class="text-muted mb-0">총 <span th:text="${totalMembers}">0</span>명의 회원이 등록되어 있습니다.</p>
-            </div>
-            <div>
-                <a href="/members/register" class="btn btn-primary">
-                    <i class="bi bi-person-plus me-2"></i>새 회원 등록
-                </a>
-            </div>
-        </div>
-        
-        <!-- Search Form -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form th:action="@{/members/search}" method="get" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="keyword" class="form-label">검색어</label>
-                        <input type="text" class="form-control" id="keyword" name="keyword" 
-                               placeholder="검색어를 입력하세요">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="type" class="form-label">검색 유형</label>
-                        <select class="form-select" id="type" name="type">
-                            <option value="name">이름</option>
-                            <option value="phone">전화번호</option>
-                            <option value="email">이메일</option>
-                            <option value="address">주소</option>
-                            <option value="familyRank">항렬</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">&nbsp;</label>
-                        <div>
-                            <button type="submit" class="btn btn-outline-primary">
-                                <i class="bi bi-search me-2"></i>검색
-                            </button>
-                            <a href="/members" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-clockwise me-2"></i>초기화
-                            </a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Members Table -->
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>번호</th>
-                                <th>이름</th>
-                                <th>전화번호</th>
-                                <th>이메일</th>
-                                <th>항렬</th>
-                                <th>주소</th>
-                                <th>가입일</th>
-                                <th>관리</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="member, stat : ${members}">
-                                <td th:text="${stat.count}">1</td>
-                                <td>
-                                    <a th:href="@{/members/{id}(id=${member.id})}" 
-                                       th:text="${member.name}" 
-                                       class="text-decoration-none fw-bold"></a>
-                                </td>
-                                <td th:text="${member.phone}">010-1234-5678</td>
-                                <td th:text="${member.email}">example@email.com</td>
-                                <td>
-                                    <span th:if="${member.familyRank}" 
-                                          class="badge bg-info" 
-                                          th:text="${member.familyRank}">25세</span>
-                                </td>
-                                <td th:text="${member.address}">서울시 강남구</td>
-                                <td th:text="${#temporals.format(member.joinDate, 'yyyy-MM-dd')}">2024-01-01</td>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a th:href="@{/members/{id}(id=${member.id})}" 
-                                           class="btn btn-outline-primary" 
-                                           title="상세보기">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a th:href="@{/members/{id}/edit(id=${member.id})}" 
-                                           class="btn btn-outline-warning" 
-                                           title="수정">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" 
-                                                class="btn btn-outline-danger" 
-                                                title="삭제"
-                                                onclick="confirmDelete(this, [[${member.id}]], [[${member.name}]])">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(members)}">
-                                <td colspan="8" class="text-center text-muted py-4">
-                                    <i class="bi bi-people display-4 d-block mb-3"></i>
-                                    등록된 회원이 없습니다.
-                                    <br>
-                                    <a href="/members/register" class="btn btn-primary mt-3">
-                                        <i class="bi bi-person-plus me-2"></i>첫 번째 회원 등록하기
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">회원 삭제 확인</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>정말로 <strong id="memberName"></strong> 회원을 삭제하시겠습니까?</p>
-                    <p class="text-muted small">삭제된 회원은 복구할 수 없습니다.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <form id="deleteForm" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-danger">삭제</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>진주 류씨 반구당공파</h5>
-                    <p>우리 가문의 전통을 이어가고 후손들의 화합을 도모합니다.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>연락처</h5>
-                    <p>
-                        <i class="bi bi-telephone me-2"></i>02-1234-5678<br>
-                        <i class="bi bi-envelope me-2"></i>info@genealogy.com<br>
-                        <i class="bi bi-geo-alt me-2"></i>서울시 강남구 종친회관
-                    </p>
-                </div>
-                <div class="col-md-4">
-                    <h5>바로가기</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="/about" class="text-light">소개</a></li>
-                        <li><a href="/notices" class="text-light">공지사항</a></li>
-                        <li><a href="/members" class="text-light">회원관리</a></li>
-                        <li><a href="/contact" class="text-light">연락처</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="text-center">
-                <p>&copy; 2025 진주 류씨 반구당공파. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom Scripts -->
-    <script>
-        function confirmDelete(button, memberId, memberName) {
-            document.getElementById('memberName').textContent = memberName;
-            document.getElementById('deleteForm').action = '/members/' + memberId + '/delete';
-            
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
-        }
-    </script>
 </body>
 </html>

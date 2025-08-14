@@ -1,16 +1,26 @@
 package com.genealogy.genealogryu.controller;
 
-import com.genealogy.genealogryu.entity.Member;
-import com.genealogy.genealogryu.service.MemberService;
-import jakarta.validation.Valid;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.genealogy.genealogryu.entity.Member;
+import com.genealogy.genealogryu.service.MemberService;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/members")
@@ -195,5 +205,82 @@ public class MemberController {
         List<Member> members = memberService.getActiveMembers();
         model.addAttribute("members", members);
         return "member/export";
+    }
+    
+    // CSV 다운로드
+    @GetMapping("/export/csv")
+    public ResponseEntity<String> exportCsv(
+            @RequestParam(value = "fields", defaultValue = "id,name,phone") String[] fields,
+            @RequestParam(value = "status", defaultValue = "active") String status) {
+        
+        List<Member> members;
+        switch (status) {
+            case "active":
+                members = memberService.getActiveMembers();
+                break;
+            case "inactive":
+                members = memberService.getAllMembers().stream()
+                        .filter(m -> !m.isActive())
+                        .toList();
+                break;
+            default:
+                members = memberService.getAllMembers();
+                break;
+        }
+        
+        StringBuilder csv = new StringBuilder();
+        
+        // 헤더 추가
+        for (int i = 0; i < fields.length; i++) {
+            if (i > 0) csv.append(",");
+            csv.append(getFieldHeader(fields[i]));
+        }
+        csv.append("\n");
+        
+        // 데이터 추가
+        for (Member member : members) {
+            for (int i = 0; i < fields.length; i++) {
+                if (i > 0) csv.append(",");
+                csv.append(getFieldValue(member, fields[i]));
+            }
+            csv.append("\n");
+        }
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv; charset=UTF-8"));
+        headers.setContentDispositionFormData("attachment", "members.csv");
+        
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csv.toString());
+    }
+    
+    private String getFieldHeader(String field) {
+        switch (field) {
+            case "id": return "회원ID";
+            case "name": return "이름";
+            case "phone": return "전화번호";
+            case "email": return "이메일";
+            case "birthDate": return "생년월일";
+            case "familyRank": return "항렬";
+            case "address": return "주소";
+            case "joinDate": return "가입일";
+            default: return field;
+        }
+    }
+    
+    private String getFieldValue(Member member, String field) {
+        switch (field) {
+            case "id": return String.valueOf(member.getId());
+            case "name": return member.getName();
+            case "phone": return member.getPhone();
+            case "email": return member.getEmail() != null ? member.getEmail() : "";
+            case "birthDate": return member.getBirthDate() != null ? member.getBirthDate() : "";
+            case "familyRank": return member.getFamilyRank() != null ? member.getFamilyRank() : "";
+            case "address": return member.getAddress() != null ? member.getAddress() : "";
+            case "joinDate": return member.getJoinDate() != null ? 
+                    member.getJoinDate().toString() : "";
+            default: return "";
+        }
     }
 }

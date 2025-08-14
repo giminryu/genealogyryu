@@ -53,7 +53,10 @@ public class EventService {
     }
 
     public void increaseViewCount(Long id) {
-        eventRepository.findById(id).ifPresent(e -> e.setViewCount(e.getViewCount() + 1));
+        eventRepository.findById(id).ifPresent(e -> {
+            e.setViewCount(e.getViewCount() + 1);
+            eventRepository.save(e);
+        });
     }
 
     @Transactional(readOnly = true)

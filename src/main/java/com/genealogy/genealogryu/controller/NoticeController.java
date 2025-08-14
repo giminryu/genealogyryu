@@ -78,6 +78,9 @@ public class NoticeController {
         }
 
         Notice notice = maybeNotice.get();
+        
+        // 조회수 증가
+        noticeService.incrementViewCount(id);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean authenticated = auth != null && !(auth instanceof AnonymousAuthenticationToken);
