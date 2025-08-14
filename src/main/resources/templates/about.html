@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소개 - 종친회</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            color: #2c3e50 !important;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #667eea;
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 45%;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: 0;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 55%;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-people-fill me-2"></i>종친회
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">홈</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/notices">공지사항</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/events">경조사</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/members">회원관리</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">소개</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">연락처</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/members/register">
+                            <i class="bi bi-person-plus me-1"></i>회원가입
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-4 fw-bold mb-4">진주류씨 반구당공파 종친회</h1>
+                    <p class="lead mb-4">조상님들의 정신을 계승하고 후손들의 화합을 도모하는 종친회입니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <!-- 종친회 소개 -->
+                    <div class="card mb-5">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4">
+                                <i class="bi bi-people-fill me-2 text-primary"></i>종친회 소개
+                            </h2>
+                            <p class="lead">진주류씨 반구당공파 종친회는 우리 가문의 전통을 이어가고 후손들의 화합을 도모하기 위해 설립되었습니다.</p>
+                            <p>우리 종친회는 다음과 같은 목표를 가지고 활동하고 있습니다:</p>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>조상님들의 정신과 전통 계승</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>종친 간의 화합과 소통 증진</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>후손들의 교육과 성장 지원</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>가문의 역사와 문화 보존</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 가문의 역사 -->
+                    <div class="card mb-5">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4">
+                                <i class="bi bi-book-fill me-2 text-primary"></i>가문의 역사
+                            </h2>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-content">
+                                        <h5>시조 유차달</h5>
+                                        <p class="text-muted">고려시대의 명장으로 진주류씨의 시조가 되었습니다.</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-content">
+                                        <h5>반구당공 유성</h5>
+                                        <p class="text-muted">조선시대의 학자로 반구당공파의 파조가 되었습니다.</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-content">
+                                        <h5>현대 종친회 설립</h5>
+                                        <p class="text-muted">1980년대에 현대적인 종친회가 설립되어 현재까지 이어지고 있습니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 주요 활동 -->
+                    <div class="card mb-5">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4">
+                                <i class="bi bi-calendar-event-fill me-2 text-primary"></i>주요 활동
+                            </h2>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-people-fill display-4 text-primary mb-3"></i>
+                                            <h5>정기 종친회</h5>
+                                            <p class="text-muted">매년 봄과 가을에 정기 종친회를 개최하여 종친 간의 화합을 도모합니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-mortarboard-fill display-4 text-primary mb-3"></i>
+                                            <h5>장학금 지원</h5>
+                                            <p class="text-muted">우수한 후손들에게 장학금을 지원하여 교육을 돕습니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-book-fill display-4 text-primary mb-3"></i>
+                                            <h5>가문사 연구</h5>
+                                            <p class="text-muted">가문의 역사와 문화를 연구하고 보존하는 활동을 합니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-heart-fill display-4 text-primary mb-3"></i>
+                                            <h5>사회봉사</h5>
+                                            <p class="text-muted">지역사회 발전을 위한 다양한 봉사활동을 진행합니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 조직도 -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4">
+                                <i class="bi bi-diagram-3-fill me-2 text-primary"></i>조직도
+                            </h2>
+                            <div class="row text-center">
+                                <div class="col-12 mb-4">
+                                    <div class="card bg-primary text-white">
+                                        <div class="card-body">
+                                            <h5>회장</h5>
+                                            <p class="mb-0">종친회를 대표하여 전반적인 업무를 총괄합니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>총무부</h6>
+                                            <p class="text-muted small">일반 행정 및 회계 업무</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>문화부</h6>
+                                            <p class="text-muted small">문화행사 및 교육 업무</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>봉사부</h6>
+                                            <p class="text-muted small">사회봉사 및 복지 업무</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>종친회</h5>
+                    <p>우리 가문의 전통을 이어가고 후손들의 화합을 도모합니다.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>연락처</h5>
+                    <p>
+                        <i class="bi bi-telephone me-2"></i>02-1234-5678<br>
+                        <i class="bi bi-envelope me-2"></i>info@genealogy.com<br>
+                        <i class="bi bi-geo-alt me-2"></i>서울시 강남구 종친회관
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h5>바로가기</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/notices" class="text-light">공지사항</a></li>
+                        <li><a href="/members" class="text-light">회원관리</a></li>
+                        <li><a href="/about" class="text-light">소개</a></li>
+                        <li><a href="/contact" class="text-light">연락처</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 종친회. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

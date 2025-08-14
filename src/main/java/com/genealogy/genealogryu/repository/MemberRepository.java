@@ -41,4 +41,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 최근 가입한 회원들 조회
     @Query("SELECT m FROM Member m WHERE m.isActive = true ORDER BY m.joinDate DESC")
     List<Member> findRecentMembers();
+    
+    // 지역별 회원 수 조회
+    @Query("SELECT SUBSTRING(m.address, 1, 2), COUNT(m) FROM Member m WHERE m.isActive = true GROUP BY SUBSTRING(m.address, 1, 2)")
+    List<Object[]> countMembersByRegion();
 }

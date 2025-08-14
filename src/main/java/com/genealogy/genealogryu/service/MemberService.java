@@ -105,4 +105,38 @@ public class MemberService {
     public List<Member> getRecentMembers() {
         return memberRepository.findRecentMembers();
     }
+    
+    // 지역별 회원 수 조회
+    public List<Object[]> getMemberCountByRegion() {
+        return memberRepository.countMembersByRegion();
+    }
+    
+    // 회원 상태 토글
+    public boolean toggleMemberStatus(Long id) {
+        Optional<Member> optionalMember = memberRepository.findById(id);
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            member.setActive(!member.isActive());
+            memberRepository.save(member);
+            return true;
+        }
+        return false;
+    }
+    
+    // 일괄 회원 비활성화
+    public int bulkDeactivateMembers(List<Long> memberIds) {
+        int count = 0;
+        for (Long id : memberIds) {
+            if (deactivateMember(id)) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    // 회원 통계 정보
+    public Object getMemberStatistics() {
+        // 여기에 더 상세한 통계 정보를 추가할 수 있습니다
+        return null;
+    }
 }

@@ -238,4 +238,42 @@ public class NoticeController {
         model.addAttribute("notices", notices);
         return "notice/popular";
     }
+    
+    // 최신 공지사항 목록
+    @GetMapping("/recent")
+    public String recentNotices(Model model) {
+        List<Notice> notices = noticeService.getRecentNotices();
+        model.addAttribute("notices", notices);
+        return "notice/recent";
+    }
+    
+    // 공지사항 통계
+    @GetMapping("/statistics")
+    public String noticeStatistics(Model model) {
+        model.addAttribute("totalNotices", noticeService.getNoticeCount());
+        model.addAttribute("importantNotices", noticeService.getImportantNotices());
+        model.addAttribute("popularNotices", noticeService.getPopularNotices());
+        model.addAttribute("recentNotices", noticeService.getRecentNotices());
+        model.addAttribute("noticesByMonth", noticeService.getNoticeCountByMonth());
+        return "notice/statistics";
+    }
+    
+    // 공지사항 중요도 토글
+    @PostMapping("/{id}/toggle-important")
+    public String toggleImportant(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        boolean success = noticeService.toggleImportant(id);
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "공지사항 중요도가 변경되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "공지사항 중요도 변경에 실패했습니다.");
+        }
+        return "redirect:/notices/" + id;
+    }
+    
+    // 공지사항 조회수 증가
+    @PostMapping("/{id}/increment-view")
+    public String incrementViewCount(@PathVariable Long id) {
+        noticeService.incrementViewCount(id);
+        return "redirect:/notices/" + id;
+    }
 }

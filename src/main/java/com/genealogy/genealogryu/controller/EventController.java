@@ -189,4 +189,31 @@ public class EventController {
         model.addAttribute("events", eventService.getPopularEvents());
         return "events/popular";
     }
+    
+    // 달력 화면
+    @GetMapping("/calendar")
+    public String calendar(Model model) {
+        model.addAttribute("events", eventService.getAllEvents());
+        // 모달 내 등록 폼에서 th:object 바인딩할 대상
+        model.addAttribute("event", new Event());
+        return "events/calendar";
+    }
+    
+    // 특정 날짜의 이벤트 조회 (AJAX용)
+    @GetMapping("/api/date/{date}")
+    @ResponseBody
+    public List<Event> getEventsByDate(@PathVariable String date) {
+        return eventService.getEventsByDate(date);
+    }
+    
+    // 이벤트 통계
+    @GetMapping("/statistics")
+    public String eventStatistics(Model model) {
+        model.addAttribute("totalEvents", eventService.getEventCount());
+        model.addAttribute("eventsByType", eventService.getEventCountByType());
+        model.addAttribute("eventsByMonth", eventService.getEventCountByMonth());
+        model.addAttribute("importantEvents", eventService.getImportantEvents());
+        model.addAttribute("popularEvents", eventService.getPopularEvents());
+        return "events/statistics";
+    }
 }

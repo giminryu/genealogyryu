@@ -148,4 +148,52 @@ public class MemberController {
         model.addAttribute("searchType", type);
         return "member/search";
     }
+    
+    // 회원 통계
+    @GetMapping("/statistics")
+    public String memberStatistics(Model model) {
+        model.addAttribute("totalMembers", memberService.getActiveMemberCount());
+        model.addAttribute("membersByRank", memberService.getMemberCountByFamilyRank());
+        model.addAttribute("recentMembers", memberService.getRecentMembers());
+        model.addAttribute("membersByRegion", memberService.getMemberCountByRegion());
+        return "member/statistics";
+    }
+    
+    // 회원 일괄 관리
+    @GetMapping("/bulk")
+    public String bulkManagement(Model model) {
+        model.addAttribute("members", memberService.getActiveMembers());
+        return "member/bulk";
+    }
+    
+    // 회원 일괄 삭제
+    @PostMapping("/bulk/delete")
+    public String bulkDelete(@RequestParam List<Long> memberIds, 
+                            RedirectAttributes redirectAttributes) {
+        int deletedCount = memberService.bulkDeactivateMembers(memberIds);
+        redirectAttributes.addFlashAttribute("message", 
+            deletedCount + "명의 회원이 성공적으로 삭제되었습니다.");
+        return "redirect:/members";
+    }
+    
+    // 회원 활성화/비활성화 토글
+    @PostMapping("/{id}/toggle-status")
+    public String toggleMemberStatus(@PathVariable Long id, 
+                                    RedirectAttributes redirectAttributes) {
+        boolean success = memberService.toggleMemberStatus(id);
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "회원 상태가 변경되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "회원 상태 변경에 실패했습니다.");
+        }
+        return "redirect:/members";
+    }
+    
+    // 회원 내보내기 (CSV)
+    @GetMapping("/export")
+    public String exportMembers(Model model) {
+        List<Member> members = memberService.getActiveMembers();
+        model.addAttribute("members", members);
+        return "member/export";
+    }
 }

@@ -93,4 +93,21 @@ public class NoticeService {
     public void incrementViewCount(Long id) {
         noticeRepository.incrementViewCount(id);
     }
+    
+    // 중요도 토글
+    public boolean toggleImportant(Long id) {
+        Optional<Notice> optionalNotice = noticeRepository.findById(id);
+        if (optionalNotice.isPresent()) {
+            Notice notice = optionalNotice.get();
+            notice.setImportant(!notice.isImportant());
+            noticeRepository.save(notice);
+            return true;
+        }
+        return false;
+    }
+    
+    // 월별 공지사항 수 조회
+    public List<Object[]> getNoticeCountByMonth() {
+        return noticeRepository.countNoticesByMonth();
+    }
 }

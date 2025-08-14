@@ -1,5 +1,6 @@
 package com.genealogy.genealogryu.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,5 +79,28 @@ public class EventService {
     @Transactional(readOnly = true)
     public long getEventCount() {
         return eventRepository.count();
+    }
+    
+    // 특정 날짜의 이벤트 조회
+    @Transactional(readOnly = true)
+    public List<Event> getEventsByDate(String date) {
+        try {
+            LocalDate localDate = LocalDate.parse(date);
+            return eventRepository.findByEventDate(localDate);
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+    
+    // 유형별 이벤트 수 조회
+    @Transactional(readOnly = true)
+    public List<Object[]> getEventCountByType() {
+        return eventRepository.countEventsByType();
+    }
+    
+    // 월별 이벤트 수 조회
+    @Transactional(readOnly = true)
+    public List<Object[]> getEventCountByMonth() {
+        return eventRepository.countEventsByMonth();
     }
 }

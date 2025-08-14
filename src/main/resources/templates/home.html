@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>종친회 홈페이지</title>
+    <title>진주류씨 반구당공파 홈페이지</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -86,9 +86,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/members">회원관리</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">대시보드</a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="/about">소개</a>
                     </li>
@@ -154,11 +152,12 @@
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card stats-card text-center">
+                    <div class="card stats-card text-center" role="button"
+                         style="cursor:pointer" onclick="location.href='/members'">
                         <div class="card-body">
-                            <i class="bi bi-award-fill display-4 mb-3"></i>
-                            <h3 class="card-title">50+</h3>
-                            <p class="card-text">연간 역사</p>
+                            <i class="bi bi-people-fill display-4 mb-3"></i>
+                            <h3 class="card-title" th:text="${totalMembers}">0</h3>
+                            <p class="card-text">회원 수</p>
                         </div>
                     </div>
                 </div>
@@ -297,8 +296,8 @@
                                 <a href="/notices/create" class="btn btn-outline-primary">
                                     <i class="bi bi-plus-circle me-2"></i>공지사항 작성
                                 </a>
-                                <a href="/dashboard" class="btn btn-outline-info">
-                                    <i class="bi bi-graph-up me-2"></i>대시보드
+                                <a href="/events/calendar" class="btn btn-outline-info">
+                                    <i class="bi bi-calendar-event me-2"></i>연간행사 달력
                                 </a>
                                 <a href="/contact" class="btn btn-outline-warning">
                                     <i class="bi bi-telephone me-2"></i>연락처

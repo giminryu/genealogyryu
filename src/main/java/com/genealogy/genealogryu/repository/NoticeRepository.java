@@ -35,4 +35,8 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     // 전체 공지사항 수 조회
     @Query("SELECT COUNT(n) FROM Notice n")
     long countAllNotices();
+    
+    // 월별 공지사항 수 조회
+    @Query("SELECT MONTH(n.createdAt), COUNT(n) FROM Notice n GROUP BY MONTH(n.createdAt) ORDER BY MONTH(n.createdAt)")
+    List<Object[]> countNoticesByMonth();
 }
