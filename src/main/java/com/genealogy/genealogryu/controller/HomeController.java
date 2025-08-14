@@ -89,9 +89,11 @@ public class HomeController {
     // 달력 화면
     @GetMapping("/calendar")
     public String calendar(Model model) {
-        // 달력에 뿌릴 전체(또는 필요한 기간 필터) 일정
         model.addAttribute("events", eventService.getAllEvents());
+        // 모달 내 등록 폼에서 th:object 바인딩할 대상
+        model.addAttribute("event", new com.genealogy.genealogryu.entity.Event());
         return "events/calendar";
     }
+
 
 }
